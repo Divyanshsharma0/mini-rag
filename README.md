@@ -1,285 +1,66 @@
-# 🧠 Mini-RAG System
+# Mini RAG System
 
-A **Mini Retrieval-Augmented Generation (RAG)** system built with Next.js, Pinecone, and Google Gemini. This application allows users to upload text documents, ask questions about them, and receive AI-powered answers with citations.
+Implementation of a retrieval-augmented generation pipeline using Next.js, Pinecone vector database, and Google's Gemini models.
 
-## 🔗 Live Demo
+## Architecture
 
-**Live URL**: [Coming Soon - Deploy to Vercel]  
-**GitHub Repository**: https://github.com/Divyanshsharma0/mini-rag/
-
-## 📋 Features
-
-- ✅ **Document Upload**: Paste text directly into the web interface
-- ✅ **Smart Chunking**: Configurable text chunking with 15% overlap
-- ✅ **Vector Storage**: Cloud-hosted Pinecone vector database
-- ✅ **Semantic Search**: Top-K retrieval with similarity search
-- ✅ **Reranking**: Simple keyword-based reranking for better relevance
-- ✅ **AI Answers**: Google Gemini 1.5 Flash for answer generation
-- ✅ **Citations**: Clear source attribution with relevance scores
-- ✅ **Real-time Stats**: Processing metrics and token usage estimates
-- ✅ **Responsive UI**: Clean, modern interface with dark mode support
-
-## 🏗️ Architecture
-
-```mermaid
-graph TD
-    A[User Input] --> B[Text Chunking]
-    B --> C[Embedding Generation]
-    C --> D[Pinecone Vector DB]
-    E[User Query] --> F[Query Embedding]
-    F --> G[Similarity Search]
-    G --> H[Reranking]
-    H --> I[LLM Answer Generation]
-    I --> J[Answer + Citations]
-    
-    subgraph "Components"
-        B1[Chunking: 3200 chars, 15% overlap]
-        C1[Embeddings: text-embedding-004]
-        D1[Vector DB: Pinecone]
-        H1[Reranker: Keyword-based]
-        I1[LLM: Gemini 1.5 Flash]
-    end
+**Document Indexing Pipeline:**
+```
+Text Input → Chunking (3.2k chars, 15% overlap) → Embeddings (text-embedding-004) → Pinecone Storage
 ```
 
-### System Components
-
-1. **Frontend**: Next.js 15 with React + TypeScript
-2. **Vector Database**: Pinecone (cloud-hosted)
-3. **Embeddings**: Google's text-embedding-004
-4. **LLM**: Google Gemini 1.5 Flash
-5. **Reranker**: Simple keyword-based reranking
-6. **Hosting**: Vercel (serverless)
-
-## ⚙️ Configuration
-
-### Chunking Parameters
-- **Chunk Size**: 3,200 characters (~800 tokens)
-- **Overlap**: 15%
-- **Minimum Chunk Size**: 50 characters
-
-### Retrieval Settings
-- **Top-K Retrieval**: 8 chunks
-- **Reranked Results**: 3 chunks
-- **Similarity Threshold**: None (uses top-K)
-
-### Providers Used
-- **Vector Database**: Pinecone
-- **Embeddings**: Google AI (text-embedding-004)
-- **LLM**: Google Gemini 1.5 Flash
-- **Hosting**: Vercel
-
-## 🚀 Quick Start
-
-### Prerequisites
-- Node.js 18+ 
-- Google AI API Key
-- Pinecone API Key
-
-### Installation
-
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/Divyanshsharma0/mini-rag.git
-   cd mini-rag
-   ```
-
-2. **Install dependencies**
-   ```bash
-   npm install
-   ```
-
-3. **Set up environment variables**
-   ```bash
-   cp .env.example .env.local
-   ```
-   
-   Edit `.env.local`:
-   ```env
-   GOOGLE_API_KEY=your_google_api_key_here
-   PINECONE_API_KEY=your_pinecone_api_key_here
-   PINECONE_INDEX_NAME=mini-rag-index
-   ```
-
-4. **Create Pinecone Index**
-   - Log in to [Pinecone Console](https://app.pinecone.io/)
-   - Create a new index:
-     - Name: `mini-rag-index`
-     - Dimensions: `768` (for text-embedding-004)
-     - Metric: `cosine`
-     - Pod Type: `p1.x1` (starter)
-
-5. **Run the development server**
-   ```bash
-   npm run dev
-   ```
-
-6. **Open the application**
-   - Navigate to [http://localhost:3000](http://localhost:3000)
-
-### Usage
-
-1. **Upload Text**: Paste your text content in the upload section
-2. **Index Document**: Click "Index Document" to process and store embeddings
-3. **Ask Questions**: Use the query section to ask questions about your text
-4. **View Results**: Get AI-generated answers with source citations
-
-## 📊 API Endpoints
-
-### POST /api/embed
-Index a text document into the vector database.
-
-**Request Body:**
-```json
-{
-  "text": "Your document text here...",
-  "source": "document_name.pdf"
-}
+**Query Pipeline:**
+```
+User Query → Vector Search (top-8) → Keyword Reranking (top-3) → Context Assembly → LLM Generation
 ```
 
-**Response:**
-```json
-{
-  "success": true,
-  "message": "Document successfully indexed",
-  "stats": {
-    "chunksCreated": 5,
-    "avgChunkSize": 2800,
-    "avgTokens": 750,
-    "totalTokens": 3750,
-    "vectorsStored": 5
-  }
-}
-```
+## Implementation Details
 
-### POST /api/query
-Query the RAG system for answers.
+### Text Processing
+- **Chunking Strategy**: Fixed 3,200 character chunks with 15% overlap to maintain context boundaries
+- **Overlap Calculation**: `overlapSize = chunkSize * 0.15`, `stepSize = chunkSize - overlapSize`
+- **Minimum Threshold**: Chunks under 50 characters are filtered out
 
-**Request Body:**
-```json
-{
-  "query": "What is the main topic?",
-  "topK": 8,
-  "rerankTopK": 3
-}
-```
+### Vector Operations
+- **Embedding Model**: Google's text-embedding-004 (768 dimensions)
+- **Vector Storage**: Pinecone with cosine similarity
+- **Search**: Top-K retrieval with configurable K (default: 8)
 
-**Response:**
-```json
-{
-  "success": true,
-  "answer": "Based on the provided context...",
-  "citations": [
-    {
-      "source": "user_input",
-      "position": 0,
-      "text": "Relevant text snippet...",
-      "relevanceScore": 0.85
-    }
-  ],
-  "metadata": {
-    "totalChunks": 5,
-    "retrievedChunks": 8,
-    "rerankedChunks": 3,
-    "tokensUsed": 450,
-    "model": "gemini-1.5-flash",
-    "processingTime": 1250
-  }
-}
-```
+### Reranking Algorithm
+Simple keyword-based scoring that combines:
+- **Semantic similarity**: 70% weight from original vector score
+- **Term frequency**: 20% weight from query-content keyword overlap
+- **Position bias**: 10% weight favoring earlier document chunks
 
-## 🔧 Development
+### LLM Integration
+- **Model**: Gemini 2.0 Flash Experimental
+- **Context Assembly**: Concatenated reranked chunks with source labels
+- **Generation**: Temperature 0.3, max 1024 output tokens
+- **Citation Extraction**: Maps back to original chunk metadata
 
-### Project Structure
-```
-mini-rag/
-├── src/
-│   ├── app/
-│   │   ├── api/
-│   │   │   ├── embed/route.ts
-│   │   │   └── query/route.ts
-│   │   ├── globals.css
-│   │   ├── layout.tsx
-│   │   └── page.tsx
-│   ├── components/
-│   │   ├── AnswerPanel.tsx
-│   │   ├── QuerySection.tsx
-│   │   ├── StatsPanel.tsx
-│   │   └── TextUploadSection.tsx
-│   └── lib/
-│       ├── chunking.ts
-│       ├── embeddings.ts
-│       ├── llm.ts
-│       ├── rag.ts
-│       ├── reranker.ts
-│       └── vectorstore.ts
-├── .env
-├── package.json
-└── README.md
-```
+## Core Services
 
-### Available Scripts
-- `npm run dev` - Start development server
-- `npm run build` - Build for production
-- `npm run start` - Start production server
-- `npm run lint` - Run ESLint
+- **RAGService**: Orchestrates indexing and query workflows
+- **VectorStore**: Pinecone integration with CRUD operations
+- **SimpleReranker**: Keyword-based relevance scoring
+- **LLMService**: Gemini integration with prompt engineering
+- **ChunkingService**: Text segmentation with overlap handling
 
-## 🧪 Minimal Evaluation
+## API Design
 
-### Test Cases
-1. **Basic QA**: "What is this document about?"
-2. **Specific Details**: "What are the key benefits mentioned?"
-3. **Summarization**: "Can you summarize the main points?"
-4. **Context Retrieval**: "What does the author say about X?"
-5. **Citation Accuracy**: Verify sources are correctly attributed
+**POST /api/embed**
+- Processes text input through chunking → embedding → storage pipeline
+- Returns indexing statistics (chunk count, token estimates, storage metrics)
+- Supports optional vector store clearing
 
-### Success Metrics
-- **Relevance**: Citations should be contextually relevant
-- **Accuracy**: Answers should be grounded in the provided text
-- **Performance**: Response time < 5 seconds
-- **Coverage**: System should handle documents up to ~10,000 words
+**POST /api/query** 
+- Executes retrieval → reranking → generation pipeline
+- Returns answers with citations, relevance scores, and processing metadata
+- Configurable topK and rerankTopK parameters
 
-## 📝 Remarks
+## Technical Considerations
 
-### Current Limitations
-- **Chunking**: Fixed character-based chunking (no semantic splitting)
-- **Memory**: No conversation history between queries
-- **File Upload**: Only supports text pasting (no file upload)
-- **Scalability**: Single-user system (no multi-tenancy)
-
-### Free Tier Limits
-- **Pinecone**: 1 index, 100K vectors max
-- **Google AI**: Rate limits 
-- **Vercel**: Serverless function timeouts (30s)
-
-### Production Improvements
-1. **Enhanced Reranking**: Integrate Cohere Rerank or similar
-2. **Semantic Chunking**: Use LLM-based chunking strategies
-3. **File Upload**: Support PDF, Word, and other document formats
-4. **Authentication**: Add user authentication and document management
-5. **Caching**: Implement query result caching
-6. **Monitoring**: Add error tracking and performance monitoring
-7. **Multi-modal**: Support image and table processing
-
-## 🔐 Environment Variables
-
-Create a `.env.local` file with:
-
-```env
-# Required - Google AI API Key
-GOOGLE_API_KEY=your_google_api_key_here
-
-# Required - Pinecone Configuration
-PINECONE_API_KEY=your_pinecone_api_key_here
-PINECONE_INDEX_NAME=rag-index
-```
-
-
-## 👤 Author
-
-**Your Name**  
-- GitHub: [@Divyanshsharma0](https://github.com/Divyanshsharma0)
-- LinkedIn: linkedin.com/in/divyansh-sharma-4484b8252
-
----
-
-Built with ❤️ using Next.js, Pinecone, and Google Gemini
+**Rate Limiting**: Free tier constraints (15 RPM for Gemini 2.0 Flash)
+**Vector Dimensions**: 768-dimensional embeddings from text-embedding-004
+**Chunking Trade-offs**: Character-based splitting vs semantic boundaries
+**Reranking**: Simple keyword matching vs neural rerankers

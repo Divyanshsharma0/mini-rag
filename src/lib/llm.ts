@@ -26,7 +26,7 @@ export class LLMService {
 
   constructor() {
     this.model = genAI.getGenerativeModel({ 
-      model: 'gemini-1.5-flash',
+      model: 'gemini-2.0-flash-exp',
       generationConfig: {
         temperature: 0.3,
         topK: 40,
@@ -60,7 +60,7 @@ export class LLMService {
         answer,
         citations,
         tokensUsed: this.estimateTokens(prompt + answer),
-        model: 'gemini-1.5-flash'
+        model: 'gemini-2.0-flash-exp'
       };
     } catch (error) {
       console.error('Error generating answer:', error);
