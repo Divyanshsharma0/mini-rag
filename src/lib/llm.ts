@@ -83,7 +83,7 @@ export class LLMService {
 1. Answer only based on the provided context
 2. If the context doesn't contain enough information, say so
 3. Be precise and concise
-4. Reference the sources when possible (e.g., "According to Source 1...")
+4. Reference the sources when possible
 5. If multiple sources support your answer, mention them
 
 **Context:**
