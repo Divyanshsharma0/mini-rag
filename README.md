@@ -58,9 +58,3 @@ Simple keyword-based scoring that combines:
 - Returns answers with citations, relevance scores, and processing metadata
 - Configurable topK and rerankTopK parameters
 
-## Technical Considerations
-
-**Rate Limiting**: Free tier constraints (15 RPM for Gemini 2.0 Flash)
-**Vector Dimensions**: 768-dimensional embeddings from text-embedding-004
-**Chunking Trade-offs**: Character-based splitting vs semantic boundaries
-**Reranking**: Simple keyword matching vs neural rerankers

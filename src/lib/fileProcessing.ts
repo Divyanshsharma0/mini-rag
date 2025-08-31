@@ -1,12 +1,22 @@
 // Dynamic imports to avoid build issues
 const getPdfParse = async () => {
-  const pdf = await import('pdf-parse');
-  return pdf.default;
+  try {
+    const pdf = await import('pdf-parse');
+    return pdf.default;
+  } catch (error) {
+    console.error('Failed to load pdf-parse:', error);
+    throw new Error('PDF processing is not available in this environment');
+  }
 };
 
 const getMammoth = async () => {
-  const mammoth = await import('mammoth');
-  return mammoth.default;
+  try {
+    const mammoth = await import('mammoth');
+    return mammoth.default;
+  } catch (error) {
+    console.error('Failed to load mammoth:', error);
+    throw new Error('Word document processing is not available in this environment');
+  }
 };
 
 export interface ProcessedFile {
