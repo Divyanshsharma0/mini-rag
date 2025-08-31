@@ -5,7 +5,7 @@ A **Mini Retrieval-Augmented Generation (RAG)** system built with Next.js, Pinec
 ## 🔗 Live Demo
 
 **Live URL**: [Coming Soon - Deploy to Vercel]  
-**GitHub Repository**: [https://github.com/your-username/mini-rag](https://github.com/your-username/mini-rag)
+**GitHub Repository**: https://github.com/Divyanshsharma0/mini-rag/
 
 ## 📋 Features
 
@@ -79,7 +79,7 @@ graph TD
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/your-username/mini-rag.git
+   git clone https://github.com/Divyanshsharma0/mini-rag.git
    cd mini-rag
    ```
 
@@ -212,7 +212,7 @@ mini-rag/
 │       ├── rag.ts
 │       ├── reranker.ts
 │       └── vectorstore.ts
-├── .env.example
+├── .env
 ├── package.json
 └── README.md
 ```
@@ -241,7 +241,6 @@ mini-rag/
 ## 📝 Remarks
 
 ### Current Limitations
-- **Reranker**: Uses simple keyword matching instead of neural rerankers
 - **Chunking**: Fixed character-based chunking (no semantic splitting)
 - **Memory**: No conversation history between queries
 - **File Upload**: Only supports text pasting (no file upload)
@@ -249,7 +248,7 @@ mini-rag/
 
 ### Free Tier Limits
 - **Pinecone**: 1 index, 100K vectors max
-- **Google AI**: Rate limits may apply
+- **Google AI**: Rate limits 
 - **Vercel**: Serverless function timeouts (30s)
 
 ### Production Improvements
@@ -271,19 +270,15 @@ GOOGLE_API_KEY=your_google_api_key_here
 
 # Required - Pinecone Configuration
 PINECONE_API_KEY=your_pinecone_api_key_here
-PINECONE_INDEX_NAME=mini-rag-index
+PINECONE_INDEX_NAME=rag-index
 ```
 
-## 📄 License
-
-MIT License - see [LICENSE](LICENSE) file for details.
 
 ## 👤 Author
 
 **Your Name**  
-- Resume: [Link to your resume]
-- GitHub: [@your-username](https://github.com/your-username)
-- LinkedIn: [Your LinkedIn Profile]
+- GitHub: [@Divyanshsharma0](https://github.com/Divyanshsharma0)
+- LinkedIn: linkedin.com/in/divyansh-sharma-4484b8252
 
 ---
 
