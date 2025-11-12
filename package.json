@@ -13,7 +13,7 @@
     "@pinecone-database/pinecone": "^6.1.2",
     "@supabase/supabase-js": "^2.56.1",
     "dotenv": "^17.2.1",
-    "mammoth": "^1.10.0",
+    "mammoth": "^1.11.0",
     "next": "15.5.2",
     "pdf-parse": "^1.1.1",
     "react": "19.1.0",
